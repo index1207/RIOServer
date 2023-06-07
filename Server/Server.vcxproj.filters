@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Network">
+      <UniqueIdentifier>{dfb278eb-80e8-4162-8477-9279b0b415aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PCH">
+      <UniqueIdentifier>{3ab0d6a2-528a-4239-ae48-ef7e5499979e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{c664f285-7fa6-4631-97b0-b3e7d86e2037}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Utils">
+      <UniqueIdentifier>{26232605-f623-4710-a400-545b28548c46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\RIO">
+      <UniqueIdentifier>{274bcb37-3f17-449b-a62c-3599cd95efaf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SocketUtils.cpp">
+      <Filter>Network\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Exception.cpp">
+      <Filter>Network\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>PCH</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Listener.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Rio.cpp">
+      <Filter>Network\RIO</Filter>
+    </ClCompile>
+    <ClCompile Include="IOManager.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="IPAddress.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SocketUtils.hpp">
+      <Filter>Network\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.hpp">
+      <Filter>Network\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>PCH</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.hpp">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Listener.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Rio.hpp">
+      <Filter>Network\RIO</Filter>
+    </ClInclude>
+    <ClInclude Include="IOManager.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="IPAddress.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

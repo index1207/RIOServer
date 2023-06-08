@@ -45,6 +45,9 @@ void Listener::Start()
 		SOCKADDR_IN clientAddr;
 		int addrsize = sizeof(SOCKADDR_IN);
 		getpeername(clientSock, reinterpret_cast<SOCKADDR*>(&clientAddr), &addrsize);
+
+		/* TODO: */
+
 		std::cout << "Connected client\n";
 	}
 }

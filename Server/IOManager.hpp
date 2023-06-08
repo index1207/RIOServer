@@ -13,8 +13,10 @@ public:
 	IOManager();
 public:
 	void Start();
+public:
+	static RIO_CQ GetCQ(size_t threadId);
 private:
 	static unsigned CALLBACK IoWorkerThread(LPVOID lpParam);
 private:
-	static RIO_CQ mRioCq[];
+	static RIO_CQ mComplQue[];
 };

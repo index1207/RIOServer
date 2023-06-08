@@ -5,8 +5,8 @@
 
 void SocketUtils::Initialize()
 {
-	auto wsaData = std::make_shared<WSADATA>();
-	if (::WSAStartup(MAKEWORD(2, 2), wsaData.get()))
+	WSADATA wsaData;
+	if (::WSAStartup(MAKEWORD(2, 2), &wsaData))
 	{
 		throw network_error();
 	}

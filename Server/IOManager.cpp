@@ -7,7 +7,7 @@
 
 thread_local int LThreadId = -1;
 
-RIO_CQ IOManager::mRioCq[MAX_THREAD];
+RIO_CQ IOManager::mComplQue[MAX_THREAD];
 
 IOManager::IOManager() = default;
 
@@ -24,12 +24,17 @@ void IOManager::Start()
 	}
 }
 
+RIO_CQ IOManager::GetCQ(size_t threadId)
+{
+	return mComplQue[threadId];
+}
+
 unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 {
 	LThreadId = reinterpret_cast<int>(lpParam);
 
-	mRioCq[LThreadId] = RIO.RIOCreateCompletionQueue(MAX_CQ_SIZE, NULL);
-	if (mRioCq[LThreadId] == RIO_INVALID_CQ)
+	mComplQue[LThreadId] = RIO.RIOCreateCompletionQueue(MAX_CQ_SIZE, NULL);
+	if (mComplQue[LThreadId] == RIO_INVALID_CQ)
 	{
 		throw network_error();
 	}
@@ -39,10 +44,14 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 	{
 		ZeroMemory(&rioResult, sizeof(rioResult));
 
-		ULONG numOfResults = RIO.RIODequeueCompletion(mRioCq[LThreadId], rioResult, MAX_RIORESULT);
+		ULONG numOfResults = RIO.RIODequeueCompletion(mComplQue[LThreadId], rioResult, MAX_RIORESULT);
 		if (numOfResults == RIO_CORRUPT_CQ)
 		{
 			throw network_error();
+		}
+		for (ULONG i = 0; i < numOfResults; ++i)
+		{
+			std::wcout << "Transferred " << rioResult[i].BytesTransferred << " bytes\n";
 		}
 	}
 }

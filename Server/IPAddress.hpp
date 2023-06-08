@@ -3,9 +3,12 @@
 class IPAddress : private SOCKADDR_IN
 {
 public:
-	IPAddress() = default;
-	IPAddress(const wchar_t* ipAddress, u_short port);
+	IPAddress();
+	IPAddress(std::wstring ipAddress, u_short port);
 public:
+	void setAddress(std::wstring ipAddress);
+	void setPort(u_short port);
+
 	std::wstring getAddress();
 	u_short getPort();
 };

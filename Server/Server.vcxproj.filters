@@ -45,6 +45,9 @@
     <ClCompile Include="IPAddress.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SocketUtils.hpp">
@@ -69,6 +72,9 @@
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="IPAddress.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.hpp">
       <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>

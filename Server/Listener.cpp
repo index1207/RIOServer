@@ -2,6 +2,8 @@
 #include "Listener.hpp"
 
 #include "IPAddress.hpp"
+#include "SessionManager.h"
+#include "Session.hpp"
 
 #include <format>
 
@@ -33,7 +35,7 @@ void Listener::Start()
 		throw network_error();
 	}
 
-	std::wcout << std::format(L"Server Running on {}:{}\n", mIpAddress.getAddress(), mIpAddress.getPort());
+	std::wcout << std::format(L"Server Running on {}:{}\n", mIpAddress.GetAddress(), mIpAddress.GetPort());
 
 	while (true)
 	{
@@ -46,8 +48,7 @@ void Listener::Start()
 		int addrsize = sizeof(SOCKADDR_IN);
 		getpeername(clientSock, reinterpret_cast<SOCKADDR*>(&clientAddr), &addrsize);
 
-		/* TODO: */
-
-		std::cout << "Connected client\n";
+		std::shared_ptr<Session> session = GSessionManager.RequestSession();
+		session->Initialize(clientSock, clientAddr);
 	}
 }

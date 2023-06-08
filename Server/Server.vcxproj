@@ -27,6 +27,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Rio.cpp" />
     <ClCompile Include="Session.cpp" />
+    <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="SocketUtils.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -43,6 +44,7 @@
     <ClInclude Include="Listener.hpp" />
     <ClInclude Include="Rio.hpp" />
     <ClInclude Include="Session.hpp" />
+    <ClInclude Include="SessionManager.h" />
     <ClInclude Include="SocketUtils.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

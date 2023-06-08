@@ -22,8 +22,11 @@ SOCKET SocketUtils::CreateSocket(DWORD flag)
 	return ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, NULL, flag);
 }
 
-void SocketUtils::CloseSocket(SOCKET& sock)
+void SocketUtils::CloseSocket(SOCKET sock)
 {
-	closesocket(sock);
-	sock = INVALID_SOCKET;
+	if (sock != INVALID_SOCKET)
+	{
+		closesocket(sock);
+		sock = INVALID_SOCKET;
+	}
 }

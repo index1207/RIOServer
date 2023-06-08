@@ -48,7 +48,7 @@ void Listener::Start()
 		int addrsize = sizeof(SOCKADDR_IN);
 		getpeername(clientSock, reinterpret_cast<SOCKADDR*>(&clientAddr), &addrsize);
 
-		std::shared_ptr<Session> session = GSessionManager.RequestSession();
+		auto session = GSessionManager.RequestSession();
 		session->Initialize(clientSock, clientAddr);
 	}
 }

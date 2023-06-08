@@ -42,13 +42,16 @@
     <ClCompile Include="IOManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="IPAddress.cpp">
+    <ClCompile Include="SessionManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="Session.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="SessionManager.cpp">
+    <ClCompile Include="IPAddress.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="RioContext.cpp">
       <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,13 +77,16 @@
     <ClInclude Include="IOManager.hpp">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="IPAddress.hpp">
+    <ClInclude Include="SessionManager.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="Session.hpp">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="SessionManager.h">
+    <ClInclude Include="IPAddress.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="RioContext.hpp">
       <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>

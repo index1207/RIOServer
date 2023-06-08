@@ -7,7 +7,7 @@ public:
 	static void Terminate();
 
 	static SOCKET CreateSocket(DWORD flag);
-	static void CloseSocket(SOCKET& sock);
+	static void CloseSocket(SOCKET sock);
 
 	template<typename T>
 	static void setsockopt(SOCKET sock, int level, int optname, T value);

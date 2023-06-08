@@ -1,6 +1,6 @@
 #pragma once
 
-#include <list>
+#include <mutex>
 
 class Session;
 
@@ -13,6 +13,7 @@ public:
 	std::shared_ptr<Session> RequestSession();
 private:
 	int mSessionCount;
+	std::mutex mMtx;
 };
 
 extern SessionManager GSessionManager;

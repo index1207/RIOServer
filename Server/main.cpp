@@ -4,9 +4,16 @@
 
 int main()
 {
-	IOManager ioManager;
-	ioManager.Start();
+	try
+	{
+		IOManager ioManager;
+		ioManager.Start();
 
-	Listener listener(IPAddress(L"127.0.0.1", 8888));
-	listener.Start();
+		Listener listener(IPAddress(L"127.0.0.1", 8888));
+		listener.Start();
+	}
+	catch (network_error& e)
+	{
+		std::wcout << e.what() << '\n';
+	}
 }

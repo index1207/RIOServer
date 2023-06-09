@@ -17,7 +17,12 @@ public:
 	void Disconnect();
 	bool isConnected();
 public:
-	void PostRecv();
+	virtual void OnConnected() { };
+	virtual void OnDisconnected() { };
+	virtual void OnRecv(DWORD transferred) { };
+	virtual void OnSend(DWORD transferred) { };
+public:
+	bool PostRecv();
 	void CompleteRecv(RecvContext* recvContext, DWORD transferred);
 
 	void PostSend();

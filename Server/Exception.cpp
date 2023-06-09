@@ -1,20 +1,33 @@
 #include "stdafx.h"
 #include "Exception.hpp"
 
-network_error::network_error() : std::runtime_error("Network Error")
+#include "Encoding.hpp"
+
+network_error::network_error(std::string info) : logstr(info)
 {
 }
 
-const wchar_t* network_error::what()
+char const* network_error::what()
 {
-	const int errorCode = ::WSAGetLastError();
-	const wchar_t* s = nullptr;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, errorCode,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPWSTR)&s, 0, NULL);
-	wchar_t result[127] = L"";
-	lstrcpyW(result, s);
-	LocalFree(reinterpret_cast<HANDLE>(&s));
-	return result;
+    return (logstr + getErrorMessage()).c_str();
+}
+
+void network_error::PrintExcept()
+{
+    std::cout << logstr + getErrorMessage() << '\n';
+}
+
+std::string network_error::getErrorMessage()
+{
+    LPVOID lpMsgBuf;
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+        NULL, WSAGetLastError(),
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR)&lpMsgBuf, 0, NULL);
+
+    auto res = std::make_unique<std::string>(Encoding::ConvertTo<std::string>(reinterpret_cast<const wchar_t*>(lpMsgBuf)));
+    LocalFree(lpMsgBuf);
+
+    return res.release()->c_str();
 }

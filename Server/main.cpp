@@ -1,6 +1,6 @@
 #include "stdafx.h"
+
 #include "Engine.hpp"
-#include "IOManager.hpp"
 
 int main()
 {
@@ -14,6 +14,8 @@ int main()
 	}
 	catch (network_error& e)
 	{
-		std::wcout << e.what() << '\n';
+		std::cout << e.what() << '\n';
+		getchar();
 	}
+	return 0;
 }

@@ -19,10 +19,7 @@ void IOManager::Start()
 	{
 		DWORD dw = 0;
 		HANDLE hThrd = (HANDLE)::_beginthreadex(nullptr, 0, IoWorkerThread, (void*)i, 0, (unsigned*)dw);
-		if (hThrd == NULL)
-		{
-			throw std::exception();
-		}
+		THROW_ASSERT(hThrd != NULL);
 	}
 }
 
@@ -38,7 +35,8 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 	mComplQue[LThreadId] = RIO.RIOCreateCompletionQueue(MAX_CQ_SIZE, NULL);
 	if (mComplQue[LThreadId] == RIO_INVALID_CQ)
 	{
-		throw network_error();
+		PRINT_NET_EXCEPTION;
+		return -1;
 	}
 
 	RIORESULT rioResult[MAX_RIORESULT];
@@ -49,9 +47,9 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 		ULONG numOfResults = RIO.RIODequeueCompletion(mComplQue[LThreadId], rioResult, MAX_RIORESULT);
 		if (numOfResults == RIO_CORRUPT_CQ)
 		{
-			throw network_error();
+			THROW_NET_EXCEPTION;
 		}
-		else if (numOfResults == 0) Sleep(10);
+		else if (numOfResults == 0) Sleep(1);
 
 		for (ULONG i = 0; i < numOfResults; ++i)
 		{
@@ -59,13 +57,7 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 			auto client = context->session;
 			auto transferred = rioResult[i].BytesTransferred;
 
-			if (transferred == 0)
-			{
-				client->Disconnect();
-				context->session = nullptr;
-				continue;
-			}
-			else switch (context->eventType)
+			switch (context->eventType)
 			{
 			case EventType::Recv:
 				client->CompleteRecv(static_cast<RecvContext*>(context), transferred);
@@ -74,9 +66,10 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 				client->CompleteSend(static_cast<SendContext*>(context), transferred);
 				break;
 			default:
-				throw network_error();
+				THROW_NET_EXCEPTION;
 				break;
 			}
+			context->session = nullptr;
 		}
 	}
 }

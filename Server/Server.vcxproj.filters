@@ -54,6 +54,9 @@
     <ClCompile Include="RioContext.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="Encoding.cpp">
+      <Filter>Network\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SocketUtils.hpp">
@@ -88,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="RioContext.hpp">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Encoding.hpp">
+      <Filter>Network\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

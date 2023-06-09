@@ -19,7 +19,7 @@ Session::Session(int threadId)
 	mBufferId = RIO.RIORegisterBuffer(mBuffer, BUFFER_SIZE);
 	if (mBufferId == RIO_INVALID_BUFFERID)
 	{
-		throw network_error();
+		THROW_NET_EXCEPTION;
 	}
 }
 
@@ -47,7 +47,7 @@ void Session::Initialize(SOCKET sock, IPAddress ipAddress)
 
 	if (mReqQue == RIO_INVALID_RQ)
 	{
-		throw network_error();
+		THROW_NET_EXCEPTION;
 	}
 	
 	mDisconnected.store(false);
@@ -74,10 +74,10 @@ bool Session::isConnected()
 	return !mDisconnected;
 }
 
-void Session::PostRecv()
+bool Session::PostRecv()
 {
 	if (!isConnected())
-		return;
+		return false;
 
 	RecvContext* recvContext = new RecvContext();
 	recvContext->session = shared_from_this();
@@ -89,15 +89,23 @@ void Session::PostRecv()
 	DWORD flag = 0;
 	if (!RIO.RIOReceive(mReqQue, (PRIO_BUF)recvContext, 1, flag, recvContext))
 	{
-		throw network_error();
+		recvContext->session = nullptr;
+		PRINT_NET_EXCEPTION;
+		return false;
 	}
+	return true;
 }
 
 void Session::CompleteRecv(RecvContext* recvContext, DWORD transferred)
 {
 	recvContext->session = nullptr;
 
-	std::wcout << L"Received " << transferred << " Bytes.\n";
+	if (transferred == 0)
+	{
+		Disconnect();
+		return;
+	}
+	
 	PostRecv();
 }
 
@@ -107,4 +115,11 @@ void Session::PostSend()
 
 void Session::CompleteSend(SendContext* sendContext, DWORD transferred)
 {
+	sendContext->session = nullptr;
+
+	if (transferred == 0)
+	{
+		Disconnect();
+		return;
+	}
 }

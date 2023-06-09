@@ -43,6 +43,7 @@ void Listener::Start()
 		SOCKET clientSock = ::accept(mListenSock, nullptr, nullptr);
 		if (clientSock == INVALID_SOCKET)
 		{
+			PRINT_EXCEPTION("aa");
 			continue;
 		}
 		SOCKADDR_IN clientAddr;

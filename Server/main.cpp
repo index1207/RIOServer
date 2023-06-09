@@ -14,7 +14,7 @@ int main()
 	}
 	catch (network_error& e)
 	{
-		std::cout << e.what() << '\n';
+		std::wcout << e.what() << '\n';
 		getchar();
 	}
 	return 0;

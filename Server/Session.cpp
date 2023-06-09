@@ -47,7 +47,7 @@ void Session::Initialize(SOCKET sock, IPAddress ipAddress)
 
 	if (mReqQue == RIO_INVALID_RQ)
 	{
-		THROW_NET_EXCEPTION;
+		PRINT_EXCEPTION("Invaild RQ");
 	}
 	
 	mDisconnected.store(false);

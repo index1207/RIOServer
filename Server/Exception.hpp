@@ -1,14 +1,17 @@
 #pragma once
 
+#include "Encoding.hpp"
+
 #include <format>
 
 #define log ("[" + std::string(strrchr(__FILE__, '\\')+1) + ":" + std::to_string(__LINE__) + "] " + std::string(__FUNCTION__) + "() ")
-#define PRINT_NET_EXCEPTION network_error{log}.PrintExcept()
-#define THROW_NET_EXCEPTION throw network_error(log)
+#define PRINT_NET_EXCEPTION network_error{Encoding::ConvertTo<std::wstring>(log)}.PrintExcept()
+#define PRINT_EXCEPTION(text) network_error{Encoding::ConvertTo<std::wstring>(log)}.PrintExcept(TEXT(text))
+#define THROW_NET_EXCEPTION throw network_error(Encoding::ConvertTo<std::wstring>(log))
 #define THROW_ASSERT(expr)		\
 {								\
 	if(!(expr))	{				\
-		THROW_NET_EXCEPTION;				    \
+		THROW_NET_EXCEPTION;	\
 		__analysis_assume(expr);\
 	}							\
 }
@@ -17,12 +20,12 @@ class network_error : public std::exception
 {
 public:
 	network_error() = default;
-	network_error(std::string info);
+	network_error(std::wstring info);
 	virtual char const* what();
 public:
-	void PrintExcept();
+	void PrintExcept(std::wstring message = L"");
 private:
-	static std::string getErrorMessage();
+	static std::wstring getErrorMessage();
 private:
-	std::string logstr;
+	std::wstring logstr;
 };

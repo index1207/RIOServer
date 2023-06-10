@@ -5,25 +5,25 @@
 #include <format>
 
 #define log ("[" + std::string(strrchr(__FILE__, '\\')+1) + ":" + std::to_string(__LINE__) + "] " + std::string(__FUNCTION__) + "() ")
-#define PRINT_NET_EXCEPTION network_error{Encoding::ConvertTo<std::wstring>(log)}.PrintExcept()
-#define PRINT_EXCEPTION(text) network_error{Encoding::ConvertTo<std::wstring>(log)}.PrintExcept(TEXT(text))
-#define THROW_NET_EXCEPTION throw network_error(Encoding::ConvertTo<std::wstring>(log))
-#define THROW_ASSERT(expr)		\
-{								\
-	if(!(expr))	{				\
-		THROW_NET_EXCEPTION;	\
-		__analysis_assume(expr);\
-	}							\
+#define CRASH(excpType) throw excpType(log)
+#define ASSERT_CRASH(excpType, expr) \
+{									 \
+	if(!(expr))	{					 \
+		CRASH(excpType);			 \
+		__analysis_assume(expr);	 \
+	}								 \
 }
+#define PrintException(expr) do { printException(log, expr); } while(false)
 
-class network_error : public std::exception
+void printException(std::string loc, std::wstring expr);
+
+class net_exception : public std::exception
 {
 public:
-	network_error() = default;
-	network_error(std::wstring info);
+	net_exception() = default;
+	net_exception(std::wstring info);
+	net_exception(std::string info);
 	virtual char const* what();
-public:
-	void PrintExcept(std::wstring message = L"");
 private:
 	static std::wstring getErrorMessage();
 private:

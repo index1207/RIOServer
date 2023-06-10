@@ -8,7 +8,7 @@ void SocketUtils::Initialize()
 	WSADATA wsaData;
 	if (::WSAStartup(MAKEWORD(2, 2), &wsaData))
 	{
-		THROW_NET_EXCEPTION;
+		CRASH(net_exception);
 	}
 }
 

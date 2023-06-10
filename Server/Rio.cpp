@@ -10,7 +10,7 @@ void Rio::Initialize()
 	DWORD dwBytes = 0;
 	if (::WSAIoctl(dummySock, SIO_GET_MULTIPLE_EXTENSION_FUNCTION_POINTER, &functionTableId, sizeof(GUID), this, sizeof(RIO_EXTENSION_FUNCTION_TABLE), &dwBytes, nullptr, nullptr))
 	{
-		THROW_NET_EXCEPTION;
+		CRASH(net_exception);
 	}
 	SocketUtils::CloseSocket(dummySock);
 }

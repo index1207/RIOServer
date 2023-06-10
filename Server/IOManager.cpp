@@ -19,7 +19,7 @@ void IOManager::Start()
 	{
 		DWORD dw = 0;
 		HANDLE hThrd = (HANDLE)::_beginthreadex(nullptr, 0, IoWorkerThread, (void*)i, 0, (unsigned*)dw);
-		THROW_ASSERT(hThrd != NULL);
+		ASSERT_CRASH(std::runtime_error, hThrd != NULL);
 	}
 }
 
@@ -35,7 +35,7 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 	mComplQue[LThreadId] = RIO.RIOCreateCompletionQueue(MAX_CQ_SIZE, NULL);
 	if (mComplQue[LThreadId] == RIO_INVALID_CQ)
 	{
-		PRINT_NET_EXCEPTION;
+		PrintException(L"Invalid RIO_CQ");
 		return -1;
 	}
 
@@ -47,7 +47,7 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 		ULONG numOfResults = RIO.RIODequeueCompletion(mComplQue[LThreadId], rioResult, MAX_RIORESULT);
 		if (numOfResults == RIO_CORRUPT_CQ)
 		{
-			THROW_NET_EXCEPTION;
+			CRASH(net_exception);
 		}
 		else if (numOfResults == 0) Sleep(1);
 
@@ -66,7 +66,7 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 				client->CompleteSend(static_cast<SendContext*>(context), transferred);
 				break;
 			default:
-				THROW_NET_EXCEPTION;
+				CRASH(net_exception);
 				break;
 			}
 			context->session = nullptr;

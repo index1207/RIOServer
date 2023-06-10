@@ -19,7 +19,7 @@ Session::Session(int threadId)
 	mBufferId = RIO.RIORegisterBuffer(mBuffer, BUFFER_SIZE);
 	if (mBufferId == RIO_INVALID_BUFFERID)
 	{
-		THROW_NET_EXCEPTION;
+		CRASH(net_exception);
 	}
 }
 
@@ -47,7 +47,7 @@ void Session::Initialize(SOCKET sock, IPAddress ipAddress)
 
 	if (mReqQue == RIO_INVALID_RQ)
 	{
-		PRINT_EXCEPTION("Invaild RQ");
+		PrintException(L"Invalid RIO_RQ.");
 	}
 	
 	mDisconnected.store(false);
@@ -90,7 +90,7 @@ bool Session::PostRecv()
 	if (!RIO.RIOReceive(mReqQue, (PRIO_BUF)recvContext, 1, flag, recvContext))
 	{
 		recvContext->session = nullptr;
-		PRINT_NET_EXCEPTION;
+		PrintException(L"Faild RIOReceive");
 		return false;
 	}
 	return true;

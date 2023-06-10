@@ -13,14 +13,14 @@ Listener::Listener(IPAddress ipAddress) : mIpAddress(ipAddress)
 	mListenSock = SocketUtils::CreateSocket(WSA_FLAG_REGISTERED_IO);
 	if (mListenSock == INVALID_SOCKET)
 	{
-		THROW_NET_EXCEPTION;
+		CRASH(net_exception);
 	}
 
 	SocketUtils::setsockopt(mListenSock, SOL_SOCKET, SO_REUSEADDR, true);
 	
 	if (SOCKET_ERROR == ::bind(mListenSock, reinterpret_cast<SOCKADDR*>(&mIpAddress), sizeof(SOCKADDR_IN)))
 	{
-		THROW_NET_EXCEPTION;
+		CRASH(net_exception);
 	}
 }
 
@@ -33,7 +33,7 @@ void Listener::Start()
 {
 	if (SOCKET_ERROR == ::listen(mListenSock, SOMAXCONN))
 	{
-		THROW_NET_EXCEPTION;
+		CRASH(net_exception);
 	}
 
 	std::wcout << std::format(L"Server Running on {}:{}\n", mIpAddress.GetAddress(), mIpAddress.GetPort());
@@ -43,7 +43,7 @@ void Listener::Start()
 		SOCKET clientSock = ::accept(mListenSock, nullptr, nullptr);
 		if (clientSock == INVALID_SOCKET)
 		{
-			PRINT_EXCEPTION("aa");
+			PrintException(TEXT("Invaild Socket"));
 			continue;
 		}
 		SOCKADDR_IN clientAddr;

@@ -3,24 +3,22 @@
 
 
 
-network_error::network_error(std::wstring info) : logstr(info)
+net_exception::net_exception(std::wstring info) : logstr(info)
 {
 }
 
-char const* network_error::what()
+net_exception::net_exception(std::string info)
 {
-    return Encoding::ConvertTo<std::string>(logstr + getErrorMessage()).c_str();
+    logstr = Encoding::ConvertTo<std::wstring>(info);
 }
 
-void network_error::PrintExcept(std::wstring message)
+char const* net_exception::what()
 {
-    if (message == L"")
-        std::wcout << logstr + getErrorMessage();
-    else
-        std::wcout << logstr + message << '\n';
+    auto excpt = Encoding::ConvertTo<std::string>(logstr + getErrorMessage());
+    return excpt.c_str();
 }
 
-std::wstring network_error::getErrorMessage()
+std::wstring net_exception::getErrorMessage()
 {
     const int errorCode = WSAGetLastError();
     if (errorCode == 0) return L"잘못된 작업입니다.\n";
@@ -34,5 +32,11 @@ std::wstring network_error::getErrorMessage()
     auto res = std::make_unique<std::wstring>(reinterpret_cast<const wchar_t*>(lpMsgBuf));
     LocalFree(lpMsgBuf);
 
-    return res.release()->c_str();
+    std::wstring t = res.release()->c_str();
+    return t;
+}
+
+void printException(std::string loc, std::wstring expr)
+{
+    std::wcout << std::format(L"[ERROR] {} {}\n", Encoding::ConvertTo<std::wstring>(loc), expr);
 }

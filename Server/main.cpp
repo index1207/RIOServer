@@ -12,7 +12,7 @@ int main()
 		Listener listener(IPAddress(L"127.0.0.1", 8888));
 		listener.Start();
 	}
-	catch (network_error& e)
+	catch (net_exception& e)
 	{
 		std::wcout << e.what() << '\n';
 		getchar();

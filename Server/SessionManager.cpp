@@ -14,12 +14,3 @@ SessionManager::SessionManager() : mSessionCount(0)
 SessionManager::~SessionManager()
 {
 }
-
-std::shared_ptr<Session> SessionManager::RequestSession()
-{
-	std::lock_guard lock(mMtx);
-	int threadId = mSessionCount % MAX_THREAD;
-	auto session = std::make_shared<Session>(threadId);
-	
-	return session;
-}

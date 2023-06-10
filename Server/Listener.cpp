@@ -2,12 +2,9 @@
 #include "Listener.hpp"
 
 #include "IPAddress.hpp"
-#include "SessionManager.h"
-#include "Session.hpp"
 
 #include <format>
-
-
+ 
 Listener::Listener(IPAddress ipAddress) : mIpAddress(ipAddress)
 {
 	mListenSock = SocketUtils::CreateSocket(WSA_FLAG_REGISTERED_IO);
@@ -24,12 +21,14 @@ Listener::Listener(IPAddress ipAddress) : mIpAddress(ipAddress)
 	}
 }
 
+ 
 Listener::~Listener()
 {
 	SocketUtils::CloseSocket(mListenSock);
 }
 
-void Listener::Start()
+ 
+void Listener::Start(std::function<std::shared_ptr<Session>()> sessionFactory)
 {
 	if (SOCKET_ERROR == ::listen(mListenSock, SOMAXCONN))
 	{
@@ -50,7 +49,7 @@ void Listener::Start()
 		int addrsize = sizeof(SOCKADDR_IN);
 		getpeername(clientSock, reinterpret_cast<SOCKADDR*>(&clientAddr), &addrsize);
 
-		auto session = GSessionManager.RequestSession();
+		auto session = sessionFactory();
 		session->Initialize(clientSock, clientAddr);
 	}
 }

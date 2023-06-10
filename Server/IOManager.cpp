@@ -32,12 +32,15 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 {
 	LThreadId = reinterpret_cast<int>(lpParam);
 
-	mComplQue[LThreadId] = RIO.RIOCreateCompletionQueue(MAX_CQ_SIZE, NULL);
-	if (mComplQue[LThreadId] == RIO_INVALID_CQ)
+	auto& cq = mComplQue[LThreadId];
+	cq = RIO.RIOCreateCompletionQueue(MAX_CQ_SIZE, NULL);
+	if (cq == RIO_INVALID_CQ)
 	{
 		PrintException(L"Invalid RIO_CQ");
 		return -1;
 	}
+	
+	ASSERT_CRASH(net_exception, RIO.RIONotify(cq) != ERROR_SUCCESS);
 
 	RIORESULT rioResult[MAX_RIORESULT];
 	while (true)

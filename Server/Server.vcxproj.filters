@@ -51,11 +51,11 @@
     <ClCompile Include="IPAddress.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="RioContext.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="Encoding.cpp">
       <Filter>Network\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="RioContext.cpp">
+      <Filter>Network\RIO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,11 +89,11 @@
     <ClInclude Include="IPAddress.hpp">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="RioContext.hpp">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="Encoding.hpp">
       <Filter>Network\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="RioContext.hpp">
+      <Filter>Network\RIO</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

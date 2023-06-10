@@ -10,12 +10,14 @@ class Session : public std::enable_shared_from_this<Session>
 	enum { BUFFER_SIZE = 0x1000 };
 public:
 	Session(int threadId);
-	~Session();
+	virtual ~Session();
 public:
 	void Initialize(SOCKET sock, IPAddress ipAddress);
 
 	void Disconnect();
 	bool isConnected();
+
+	void Send(BYTE* buffer, int length);
 public:
 	virtual void OnConnected() { };
 	virtual void OnDisconnected() { };
@@ -25,12 +27,12 @@ public:
 	bool PostRecv();
 	void CompleteRecv(RecvContext* recvContext, DWORD transferred);
 
-	void PostSend();
+	bool PostSend(SendContext* sendContext);
 	void CompleteSend(SendContext* sendContext,DWORD transferred);
-private:
+protected:
 	SOCKET mSock;
 	IPAddress mIpAddress;
-	
+private:
 	std::mutex mMtx;
 	std::atomic<bool> mDisconnected;
 

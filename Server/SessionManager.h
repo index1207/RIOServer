@@ -10,10 +10,19 @@ public:
 	SessionManager();
 	~SessionManager();
 public:
-	std::shared_ptr<Session> RequestSession();
+	template<class SessionType>
+	std::shared_ptr<SessionType> RequestSession();
 private:
-	int mSessionCount;
-	std::mutex mMtx;
+	std::atomic<int> mSessionCount;
 };
+
+template<class SessionType>
+inline std::shared_ptr<SessionType> SessionManager::RequestSession()
+{
+	if (mSessionCount == INT32_MAX)
+		mSessionCount = 0;
+
+	return std::make_shared<SessionType>(mSessionCount++ % MAX_THREAD);
+}
 
 extern SessionManager GSessionManager;

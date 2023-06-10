@@ -51,8 +51,7 @@ void Session::Initialize(SOCKET sock, IPAddress ipAddress)
 	}
 	
 	mDisconnected.store(false);
-
-	std::wcout << std::format(L"Client Connected {}:{}\n", mIpAddress.GetAddress(), mIpAddress.GetPort());
+	OnConnected();
 
 	PostRecv();
 }
@@ -63,15 +62,27 @@ void Session::Disconnect()
 	if (!isConnected())
 		return;
 
-	std::wcout << std::format(L"Client Disconnected {}:{}\n", mIpAddress.GetAddress(), mIpAddress.GetPort());
 	mDisconnected.store(true);
+
+	OnDisconnected();
 
 	SocketUtils::CloseSocket(mSock);
 }
 
-bool Session::isConnected()
+bool inline Session::isConnected()
 {
 	return !mDisconnected;
+}
+
+void Session::Send(BYTE* buffer, int length)
+{
+	auto sendContext = std::make_unique<SendContext>();
+	// TODO: 버퍼 큐 만들어서 mBuuferId에 보낼 버퍼 복사하기
+	sendContext->BufferId = mBufferId;
+	sendContext->session = shared_from_this();
+	sendContext->Length = length;
+
+	PostSend(sendContext.release());
 }
 
 bool Session::PostRecv()
@@ -105,13 +116,26 @@ void Session::CompleteRecv(RecvContext* recvContext, DWORD transferred)
 		Disconnect();
 		return;
 	}
+	OnRecv(transferred);
 	
 	PostRecv();
 }
 
-void Session::PostSend()
+bool Session::PostSend(SendContext* sendContext)
 {
+	if (!isConnected()) return false;
+
+	sendContext->Offset = 0;
+
+	if (!RIO.RIOSend(mReqQue, sendContext, 1, NULL, sendContext))
+	{
+		sendContext->session = nullptr;
+		PrintException(L"Faild RIOSend");
+		return false;
+	}
+	return true;
 }
+
 
 void Session::CompleteSend(SendContext* sendContext, DWORD transferred)
 {
@@ -122,4 +146,5 @@ void Session::CompleteSend(SendContext* sendContext, DWORD transferred)
 		Disconnect();
 		return;
 	}
+	OnSend(transferred);
 }

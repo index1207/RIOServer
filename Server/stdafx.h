@@ -20,7 +20,7 @@
 
 enum Config
 {
-	MAX_THREAD = 8,
+	MAX_THREAD = 4,
 	MAX_CLIENT = 1024,
 	MAX_RQ_SEND = 32,
 	MAX_RQ_RECV = 32,

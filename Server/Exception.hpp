@@ -4,7 +4,7 @@
 
 #include <format>
 
-#define log ("[" + std::string(strrchr(__FILE__, '\\')+1) + ":" + std::to_string(__LINE__) + "] " + std::string(__FUNCTION__) + "() ")
+#define log ("[" + std::string(strrchr(__FILE__, '\\')+1) + ":" + std::to_string(__LINE__) + "] " + std::string(__FUNCTION__) + "()")
 #define CRASH(excpType) throw excpType(log)
 #define ASSERT_CRASH(excpType, expr) \
 {									 \

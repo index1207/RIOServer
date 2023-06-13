@@ -57,7 +57,7 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 		for (ULONG i = 0; i < numOfResults; ++i)
 		{
 			auto* context = reinterpret_cast<RioContext*>(rioResult[i].RequestContext);
-			auto client = context->session;
+			auto client = context->owner;
 			auto transferred = rioResult[i].BytesTransferred;
 
 			switch (context->eventType)
@@ -72,7 +72,7 @@ unsigned int CALLBACK IOManager::IoWorkerThread(LPVOID lpParam)
 				CRASH(net_exception);
 				break;
 			}
-			context->session = nullptr;
+			context->owner = nullptr;
 		}
 	}
 }

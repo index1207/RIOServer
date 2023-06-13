@@ -17,11 +17,11 @@ public:
 	void Disconnect();
 	bool isConnected();
 
-	void Send(BYTE* buffer, int length);
+	void Send(byte* buffer, int length);
 public:
 	virtual void OnConnected() { };
 	virtual void OnDisconnected() { };
-	virtual void OnRecv(DWORD transferred) { };
+	virtual void OnRecv(byte* recvBuffer, DWORD length) { };
 	virtual void OnSend(DWORD transferred) { };
 public:
 	bool PostRecv();

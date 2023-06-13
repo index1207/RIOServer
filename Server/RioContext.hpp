@@ -11,7 +11,7 @@ enum class EventType
 struct RioContext : RIO_BUF
 {
 	RioContext(EventType _eventType);
-	std::shared_ptr<Session> session;
+	std::shared_ptr<Session> owner;
 	EventType eventType;
 };
 

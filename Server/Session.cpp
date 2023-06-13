@@ -5,6 +5,7 @@
 #include "IOManager.hpp"
 
 #include <format>
+#include <queue>
 
 
 Session::Session(int threadId)
@@ -58,14 +59,13 @@ void Session::Initialize(SOCKET sock, IPAddress ipAddress)
 
 void Session::Disconnect()
 {
-	std::lock_guard<std::mutex> lock(mMtx);
 	if (!isConnected())
 		return;
 
 	mDisconnected.store(true);
 
+	std::lock_guard<std::mutex> lock(mMtx);
 	OnDisconnected();
-
 	SocketUtils::CloseSocket(mSock);
 }
 
@@ -74,13 +74,13 @@ bool inline Session::isConnected()
 	return !mDisconnected;
 }
 
-void Session::Send(BYTE* buffer, int length)
+void Session::Send(byte* buffer, int length)
 {
 	auto sendContext = std::make_unique<SendContext>();
-	// TODO: 버퍼 큐 만들어서 mBuuferId에 보낼 버퍼 복사하기
 	sendContext->BufferId = mBufferId;
-	sendContext->session = shared_from_this();
+	sendContext->owner = shared_from_this();
 	sendContext->Length = length;
+	sendContext->Offset = /* 시작 */;
 
 	PostSend(sendContext.release());
 }
@@ -91,16 +91,16 @@ bool Session::PostRecv()
 		return false;
 
 	RecvContext* recvContext = new RecvContext();
-	recvContext->session = shared_from_this();
+	recvContext->owner = shared_from_this();
 	recvContext->BufferId = mBufferId;
 	recvContext->Length = BUFFER_SIZE;
-	recvContext->Offset = 0;
+	recvContext->Offset = /* 시작 */;
 
 	DWORD recvBytes = 0;
 	DWORD flag = 0;
 	if (!RIO.RIOReceive(mReqQue, (PRIO_BUF)recvContext, 1, flag, recvContext))
 	{
-		recvContext->session = nullptr;
+		recvContext->owner = nullptr;
 		PrintException(L"Faild RIOReceive");
 		return false;
 	}
@@ -109,14 +109,15 @@ bool Session::PostRecv()
 
 void Session::CompleteRecv(RecvContext* recvContext, DWORD transferred)
 {
-	recvContext->session = nullptr;
+	recvContext->owner = nullptr;
 
 	if (transferred == 0)
 	{
 		Disconnect();
 		return;
 	}
-	OnRecv(transferred);
+
+	OnRecv(/*  */, transferred);
 	
 	PostRecv();
 }
@@ -129,7 +130,7 @@ bool Session::PostSend(SendContext* sendContext)
 
 	if (!RIO.RIOSend(mReqQue, sendContext, 1, NULL, sendContext))
 	{
-		sendContext->session = nullptr;
+		sendContext->owner = nullptr;
 		PrintException(L"Faild RIOSend");
 		return false;
 	}
@@ -139,12 +140,13 @@ bool Session::PostSend(SendContext* sendContext)
 
 void Session::CompleteSend(SendContext* sendContext, DWORD transferred)
 {
-	sendContext->session = nullptr;
+	sendContext->owner = nullptr;
 
 	if (transferred == 0)
 	{
 		Disconnect();
 		return;
 	}
+
 	OnSend(transferred);
 }

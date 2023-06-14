@@ -57,6 +57,9 @@
     <ClCompile Include="RioContext.cpp">
       <Filter>Network\RIO</Filter>
     </ClCompile>
+    <ClCompile Include="CircularBuffer.cpp">
+      <Filter>Network\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SocketUtils.hpp">
@@ -94,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="RioContext.hpp">
       <Filter>Network\RIO</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularBuffer.hpp">
+      <Filter>Network\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

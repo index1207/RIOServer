@@ -9,15 +9,15 @@
 
 
 Session::Session(int threadId)
-	: mThreadId(threadId), mSock(INVALID_SOCKET), mReqQue(RIO_INVALID_RQ), mDisconnected(true)
+	: mThreadId(threadId), mSock(INVALID_SOCKET), mReqQue(RIO_INVALID_RQ), mDisconnected(true), mCircularBuffer(mBuffer, BUFFER_SIZE)
 {
-	mBuffer = reinterpret_cast<PCHAR>(::VirtualAllocEx(GetCurrentProcess(), 0, BUFFER_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
+	mBuffer = reinterpret_cast<byte*>(::VirtualAllocEx(GetCurrentProcess(), 0, BUFFER_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
 	if (mBuffer == nullptr)
 	{
 		throw std::runtime_error("Virtual memory allocation error.");
 	}
 
-	mBufferId = RIO.RIORegisterBuffer(mBuffer, BUFFER_SIZE);
+	mBufferId = RIO.RIORegisterBuffer(reinterpret_cast<PCHAR>(mBuffer), BUFFER_SIZE);
 	if (mBufferId == RIO_INVALID_BUFFERID)
 	{
 		CRASH(net_exception);
@@ -80,7 +80,7 @@ void Session::Send(byte* buffer, int length)
 	sendContext->BufferId = mBufferId;
 	sendContext->owner = shared_from_this();
 	sendContext->Length = length;
-	sendContext->Offset = /* 시작 */;
+	sendContext->Offset = mCircularBuffer.getWritableOffset();
 
 	PostSend(sendContext.release());
 }
@@ -93,8 +93,8 @@ bool Session::PostRecv()
 	RecvContext* recvContext = new RecvContext();
 	recvContext->owner = shared_from_this();
 	recvContext->BufferId = mBufferId;
-	recvContext->Length = BUFFER_SIZE;
-	recvContext->Offset = /* 시작 */;
+	recvContext->Length = mCircularBuffer.getFreeSpace();
+	recvContext->Offset = mCircularBuffer.getReadableOffset();
 
 	DWORD recvBytes = 0;
 	DWORD flag = 0;
@@ -117,7 +117,9 @@ void Session::CompleteRecv(RecvContext* recvContext, DWORD transferred)
 		return;
 	}
 
-	OnRecv(/*  */, transferred);
+	mCircularBuffer.enque(transferred);
+
+	OnRecv(&mBuffer[mCircularBuffer.getReadableOffset()], transferred);
 	
 	PostRecv();
 }
@@ -125,8 +127,6 @@ void Session::CompleteRecv(RecvContext* recvContext, DWORD transferred)
 bool Session::PostSend(SendContext* sendContext)
 {
 	if (!isConnected()) return false;
-
-	sendContext->Offset = 0;
 
 	if (!RIO.RIOSend(mReqQue, sendContext, 1, NULL, sendContext))
 	{
@@ -147,6 +147,8 @@ void Session::CompleteSend(SendContext* sendContext, DWORD transferred)
 		Disconnect();
 		return;
 	}
+	
+	mCircularBuffer.deque(transferred);
 
 	OnSend(transferred);
 }

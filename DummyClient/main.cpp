@@ -21,7 +21,7 @@ int main()
 	SOCKADDR_IN addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(8888);
-	inet_pton(AF_INET, "192.168.0.67", &addr.sin_addr);
+	inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
 
 	if (SOCKET_ERROR == ::connect(s, (SOCKADDR*)&addr, sizeof(SOCKADDR_IN)))
 	{

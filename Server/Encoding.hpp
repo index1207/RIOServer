@@ -15,6 +15,9 @@ public:
 	static std::wstring ConvertTo<std::wstring, std::string>(std::string str);
 
 	template<>
+	static std::wstring ConvertTo<std::wstring, const char*>(const char* str);
+
+	template<>
 	static std::string ConvertTo<std::string, const wchar_t*>(const wchar_t* str);
 };
 
@@ -37,6 +40,12 @@ inline std::wstring Encoding::ConvertTo(std::string str)
 	MultiByteToWideChar(CP_UTF8, 0, &str[0], str.size(), &strUni[0], nLen1);
 
 	return std::move(strUni);
+}
+
+template<>
+inline std::wstring Encoding::ConvertTo(const char* str)
+{
+	return ConvertTo<std::wstring, std::string>(str);
 }
 
 template<>

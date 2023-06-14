@@ -21,10 +21,11 @@ public:
 		std::wcout << std::format(L"[INFO] Client Disconnected {}:{}\n", mIpAddress.GetAddress(), mIpAddress.GetPort());
 	}
 
-	virtual void OnRecv(DWORD transffered) override
+	virtual void OnRecv(byte* buffer, DWORD transffered) override
 	{
-		std::wcout << L"[INFO] Received " << transffered << " Bytes\n";
-		Send((BYTE*)"", transffered);
+		buffer[transffered - 1] = '\0';
+		std::wcout << L"[INFO] Received " << Encoding::ConvertTo<std::wstring>(reinterpret_cast<const char*>()) << '\n';
+		Send(buffer, transffered);
 	}
 	virtual void OnSend(DWORD transffered) override
 	{
@@ -39,7 +40,7 @@ int main()
 		IOManager ioManager;
 		ioManager.Start();
 
-		Listener listener(IPAddress(L"192.168.0.67", 8888));
+		Listener listener(IPAddress(L"127.0.0.1", 8888));
 		listener.Start([]() {
 			return GSessionManager.RequestSession<EchoSession>();
 		});

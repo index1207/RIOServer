@@ -1,13 +1,14 @@
 #pragma once
 
 #include "RioContext.hpp"
+#include "CircularBuffer.hpp"
 
 #include <mutex>
 #include <atomic>
 
 class Session : public std::enable_shared_from_this<Session>
 {
-	enum { BUFFER_SIZE = 0x1000 };
+	enum { BUFFER_SIZE = 0x10 };
 public:
 	Session(int threadId);
 	virtual ~Session();
@@ -37,8 +38,9 @@ private:
 	std::atomic<bool> mDisconnected;
 
 	int mThreadId;
-
+private:
 	RIO_RQ mReqQue;
 	RIO_BUFFERID mBufferId;
-	PCHAR mBuffer;
+	byte* mBuffer;
+	CircularBuffer mCircularBuffer;
 };

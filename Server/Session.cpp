@@ -76,13 +76,17 @@ bool inline Session::isConnected()
 
 void Session::Send(byte* buffer, int length)
 {
-	auto sendContext = std::make_unique<SendContext>();
+	SendContext* sendContext = new SendContext();
 	sendContext->BufferId = mBufferId;
 	sendContext->owner = shared_from_this();
+
+	memmove(mBuffer + mCircularBuffer.getWritableOffset(), buffer, length);
 	sendContext->Length = length;
 	sendContext->Offset = mCircularBuffer.getWritableOffset();
 
-	PostSend(sendContext.release());
+	mBuffer;
+
+	PostSend(sendContext);
 }
 
 bool Session::PostRecv()
@@ -117,8 +121,6 @@ void Session::CompleteRecv(RecvContext* recvContext, DWORD transferred)
 		return;
 	}
 
-	mCircularBuffer.enque(transferred);
-
 	byte buffer[1024] = "";
 	memmove(buffer, mBuffer + mCircularBuffer.getReadableOffset(), transferred);
 	OnRecv(buffer, transferred);
@@ -149,8 +151,6 @@ void Session::CompleteSend(SendContext* sendContext, DWORD transferred)
 		Disconnect();
 		return;
 	}
-	
-	mCircularBuffer.deque(transferred);
 
 	OnSend(transferred);
 }

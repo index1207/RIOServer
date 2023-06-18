@@ -28,10 +28,10 @@ size_t CircularBuffer::getReadableOffset()
 
 void CircularBuffer::enque(size_t length)
 {
-	tail = (tail + length) % length;
+	tail = (tail + length) % maxSize;
 }
 
 void CircularBuffer::deque(size_t length)
 {
-	head = (head + length) % length;
+	head = (head + length) % maxSize;
 }

@@ -23,8 +23,7 @@ public:
 
 	virtual void OnRecv(byte* buffer, DWORD transffered) override
 	{
-		buffer[transffered - 1] = '\0';
-		std::wcout << L"[INFO] Received " << Encoding::ConvertTo<std::wstring>(reinterpret_cast<const char*>()) << '\n';
+		std::wcout << L"[INFO] Received " << std::string((const char*)buffer).c_str() << '\n';
 		Send(buffer, transffered);
 	}
 	virtual void OnSend(DWORD transffered) override
@@ -40,10 +39,8 @@ int main()
 		IOManager ioManager;
 		ioManager.Start();
 
-		Listener listener(IPAddress(L"127.0.0.1", 8888));
-		listener.Start([]() {
-			return GSessionManager.RequestSession<EchoSession>();
-		});
+		Listener listener(IPAddress(L"127.0.0.1", 8888), []() { return GSessionManager.RequestSession<EchoSession>(); });
+		listener.Start();
 	}
 	catch (net_exception& e)
 	{

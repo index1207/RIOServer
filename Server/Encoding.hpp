@@ -35,9 +35,9 @@ inline std::string Encoding::ConvertTo(std::wstring str)
 template<>
 inline std::wstring Encoding::ConvertTo(std::string str)
 {
-	int nLen1 = MultiByteToWideChar(CP_UTF8, 0, &str[0], str.size(), NULL, NULL);
+	int nLen1 = MultiByteToWideChar(CP_ACP, 0, &str[0], str.size(), NULL, NULL);
 	std::wstring strUni(nLen1, 0);
-	MultiByteToWideChar(CP_UTF8, 0, &str[0], str.size(), &strUni[0], nLen1);
+	MultiByteToWideChar(CP_ACP, 0, &str[0], str.size(), &strUni[0], nLen1);
 
 	return std::move(strUni);
 }

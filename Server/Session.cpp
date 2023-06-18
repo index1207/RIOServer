@@ -119,8 +119,10 @@ void Session::CompleteRecv(RecvContext* recvContext, DWORD transferred)
 
 	mCircularBuffer.enque(transferred);
 
-	OnRecv(&mBuffer[mCircularBuffer.getReadableOffset()], transferred);
-	
+	byte buffer[1024] = "";
+	memmove(buffer, mBuffer + mCircularBuffer.getReadableOffset(), transferred);
+	OnRecv(buffer, transferred);
+
 	PostRecv();
 }
 

@@ -5,7 +5,7 @@
 
 #include <format>
  
-Listener::Listener(IPAddress ipAddress) : mIpAddress(ipAddress)
+Listener::Listener(IPAddress ipAddress, SessionFactoryType sessionFactory) : mIpAddress(ipAddress), mSessionFactory(sessionFactory)
 {
 	mListenSock = SocketUtils::CreateSocket(WSA_FLAG_REGISTERED_IO);
 	if (mListenSock == INVALID_SOCKET)
@@ -28,7 +28,7 @@ Listener::~Listener()
 }
 
  
-void Listener::Start(std::function<std::shared_ptr<Session>()> sessionFactory)
+void Listener::Start()
 {
 	if (SOCKET_ERROR == ::listen(mListenSock, SOMAXCONN))
 	{
@@ -49,7 +49,7 @@ void Listener::Start(std::function<std::shared_ptr<Session>()> sessionFactory)
 		int addrsize = sizeof(SOCKADDR_IN);
 		getpeername(clientSock, reinterpret_cast<SOCKADDR*>(&clientAddr), &addrsize);
 
-		auto session = sessionFactory();
+		auto session = mSessionFactory();
 		session->Initialize(clientSock, clientAddr);
 	}
 }

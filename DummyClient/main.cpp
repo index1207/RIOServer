@@ -5,6 +5,8 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
+#include <future>
+
 #pragma comment(lib, "ws2_32.lib")
 
 int main(int argc, char* argv[])
@@ -17,7 +19,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	auto s = ::socket(AF_INET, SOCK_STREAM, 0);
+	auto s = ::WSASocket(AF_INET, SOCK_STREAM, 0, NULL, NULL, WSA_FLAG_OVERLAPPED);
 	if (s == INVALID_SOCKET) return -1;
 
 	SOCKADDR_IN addr;
@@ -38,7 +40,8 @@ int main(int argc, char* argv[])
 		std::getline(std::cin, str);
 		send(s, &str[0], str.size(), 0);
 		std::vector<char> buf(str.length(), 0);
-		recv(s, buf.data(), buf.size(), 0);
+		auto f = std::async(recv, s, buf.data(), buf.size(), 0);
+		f.wait();
 		std::cout << "recv: " << std::string{ buf.begin(), buf.end() }.c_str() << '\n';
 	}
 

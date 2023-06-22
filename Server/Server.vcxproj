@@ -27,6 +27,7 @@
     <ClCompile Include="IPAddress.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RecvBuffer.cpp" />
     <ClCompile Include="Rio.cpp" />
     <ClCompile Include="RioContext.cpp" />
     <ClCompile Include="Session.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="IOManager.hpp" />
     <ClInclude Include="IPAddress.hpp" />
     <ClInclude Include="Listener.hpp" />
+    <ClInclude Include="RecvBuffer.hpp" />
     <ClInclude Include="Rio.hpp" />
     <ClInclude Include="RioContext.hpp" />
     <ClInclude Include="Session.hpp" />

@@ -60,6 +60,7 @@
     <ClCompile Include="CircularBuffer.cpp">
       <Filter>Network\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="RecvBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SocketUtils.hpp">
@@ -101,5 +102,6 @@
     <ClInclude Include="CircularBuffer.hpp">
       <Filter>Network\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="RecvBuffer.hpp" />
   </ItemGroup>
 </Project>

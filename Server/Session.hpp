@@ -1,14 +1,14 @@
 #pragma once
 
 #include "RioContext.hpp"
-#include "CircularBuffer.hpp"
+#include "RecvBuffer.hpp"
 
 #include <mutex>
 #include <atomic>
 
 class Session : public std::enable_shared_from_this<Session>
 {
-	enum { BUFFER_SIZE = 0x10 };
+	enum { BUFFER_SIZE = 0x10000 };
 public:
 	Session(int threadId);
 	virtual ~Session();
@@ -22,7 +22,7 @@ public:
 public:
 	virtual void OnConnected() { };
 	virtual void OnDisconnected() { };
-	virtual void OnRecv(byte* recvBuffer, DWORD length) { };
+	virtual int  OnRecv(byte* recvBuffer, DWORD length) { return 0; };
 	virtual void OnSend(DWORD transferred) { };
 public:
 	bool PostRecv();
@@ -41,6 +41,6 @@ private:
 private:
 	RIO_RQ mReqQue;
 	RIO_BUFFERID mBufferId;
+	RecvBuffer* recvBuffer;
 	byte* mBuffer;
-	CircularBuffer mCircularBuffer;
 };

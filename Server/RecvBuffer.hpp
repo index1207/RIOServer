@@ -14,18 +14,45 @@ public:
 		return _size - _writeIdx;
 	}
 
-	auto inline ReadByteArray()-> std::shared_ptr<byte[]>
+	auto inline GetReadOffset() -> size_t
 	{
-		auto readBuffer = std::make_shared<byte[] >(GetDataSize());
-		std::copy(_buffer, _buffer + _readIdx, readBuffer.get());
-		return readBuffer;
+		return _readIdx;
 	}
-	auto inline WriteByteArray() -> byte*
+	auto inline GetWriteOffset() -> size_t
 	{
-
+		return _writeIdx;
 	}
 
-	auto Clear() -> void;
+	auto Clear() -> void
+	{
+		if (GetDataSize() == 0)
+		{
+			_readIdx = 0;
+			_writeIdx = 0;
+		}
+		else
+		{
+			std::copy(_buffer, _buffer + _writeIdx, _buffer);
+			_readIdx = 0;
+			_writeIdx = GetDataSize();
+		}
+	}
+
+	auto inline OnRead(int numOfBytes) -> bool
+	{
+		if (numOfBytes > GetDataSize())
+			return false;
+		_readIdx += numOfBytes;
+		return true;
+	}
+
+	auto inline OnWrite(int numOfBytes) -> bool
+	{
+		if (numOfBytes > GetFreeSize())
+			return false;
+		_writeIdx += numOfBytes;
+		return true;
+	}
 private:
 	byte* _buffer;
 	size_t _size;

@@ -34,15 +34,10 @@ int main(int argc, char* argv[])
 
 	std::cout << "connected!\n";
 
+	std::string data = "HELLO WORLD!";
 	while (true)
 	{
-		std::string str;
-		std::getline(std::cin, str);
-		send(s, &str[0], str.size(), 0);
-		std::vector<char> buf(str.length(), 0);
-		auto f = std::async(recv, s, buf.data(), buf.size(), 0);
-		f.wait();
-		std::cout << "recv: " << std::string{ buf.begin(), buf.end() }.c_str() << '\n';
+		send(s, data.c_str(), data.size(), 0);
 	}
 
 	::WSACleanup();

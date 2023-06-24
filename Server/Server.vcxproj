@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CircularBuffer.cpp" />
     <ClCompile Include="Encoding.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Exception.cpp" />
@@ -41,7 +40,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CircularBuffer.hpp" />
     <ClInclude Include="Encoding.hpp" />
     <ClInclude Include="Engine.hpp" />
     <ClInclude Include="Exception.hpp" />

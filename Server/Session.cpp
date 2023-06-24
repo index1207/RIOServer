@@ -9,13 +9,15 @@
 
 
 Session::Session(int threadId)
-	: mThreadId(threadId), mSock(INVALID_SOCKET), mReqQue(RIO_INVALID_RQ), mDisconnected(true), mCircularBuffer(mBuffer, BUFFER_SIZE)
+	: mThreadId(threadId), mSock(INVALID_SOCKET), mReqQue(RIO_INVALID_RQ), mDisconnected(true)
 {
 	mBuffer = reinterpret_cast<byte*>(::VirtualAllocEx(GetCurrentProcess(), 0, BUFFER_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
 	if (mBuffer == nullptr)
 	{
 		throw std::runtime_error("Virtual memory allocation error.");
 	}
+
+	recvBuffer = new RecvBuffer(mBuffer, BUFFER_SIZE);
 
 	mBufferId = RIO.RIORegisterBuffer(reinterpret_cast<PCHAR>(mBuffer), BUFFER_SIZE);
 	if (mBufferId == RIO_INVALID_BUFFERID)
@@ -26,6 +28,7 @@ Session::Session(int threadId)
 
 Session::~Session()
 {
+	delete recvBuffer;
 	RIO.RIODeregisterBuffer(mBufferId);
 	::VirtualFreeEx(GetCurrentProcess(), mBuffer, 0, MEM_RELEASE);
 }
@@ -80,11 +83,9 @@ void Session::Send(byte* buffer, int length)
 	sendContext->BufferId = mBufferId;
 	sendContext->owner = shared_from_this();
 
-	memmove(mBuffer + mCircularBuffer.getWritableOffset(), buffer, length);
-	sendContext->Length = length;
-	sendContext->Offset = mCircularBuffer.getWritableOffset();
-
-	mBuffer;
+	//memmove(mBuffer + mCircularBuffer.getWritableOffset(), buffer, length);
+	//sendContext->Length = length;
+	//sendContext->Offset = mCircularBuffer.getWritableOffset();
 
 	PostSend(sendContext);
 }
@@ -94,11 +95,13 @@ bool Session::PostRecv()
 	if (!isConnected())
 		return false;
 
+
+	recvBuffer->Clear();
 	RecvContext* recvContext = new RecvContext();
 	recvContext->owner = shared_from_this();
 	recvContext->BufferId = mBufferId;
-	recvContext->Length = mCircularBuffer.getFreeSpace();
-	recvContext->Offset = mCircularBuffer.getReadableOffset();
+	recvContext->Length = recvBuffer->GetFreeSize();
+	recvContext->Offset = recvBuffer->GetWriteOffset();
 
 	DWORD recvBytes = 0;
 	DWORD flag = 0;
@@ -121,10 +124,27 @@ void Session::CompleteRecv(RecvContext* recvContext, DWORD transferred)
 		return;
 	}
 
-	byte buffer[1024] = "";
-	memmove(buffer, mBuffer + mCircularBuffer.getReadableOffset(), transferred);
-	OnRecv(buffer, transferred);
+	if (!recvBuffer->OnWrite(transferred))
+	{
+		Disconnect();
+		return;
+	}
 
+	auto buf = std::make_shared<byte[]>(transferred);
+	std::copy(mBuffer + recvBuffer->GetReadOffset(), mBuffer + recvBuffer->GetDataSize(), buf.get());
+
+	int recvLen = OnRecv(mBuffer, transferred);
+	if (recvLen < 0 || recvLen > recvBuffer->GetDataSize())
+	{
+		Disconnect();
+		return;
+	}
+
+	if (!recvBuffer->OnRead(recvLen))
+	{
+		Disconnect();
+		return;
+	}
 	PostRecv();
 }
 

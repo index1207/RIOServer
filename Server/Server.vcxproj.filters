@@ -57,10 +57,9 @@
     <ClCompile Include="RioContext.cpp">
       <Filter>Network\RIO</Filter>
     </ClCompile>
-    <ClCompile Include="CircularBuffer.cpp">
-      <Filter>Network\Utils</Filter>
+    <ClCompile Include="RecvBuffer.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="RecvBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SocketUtils.hpp">
@@ -99,9 +98,8 @@
     <ClInclude Include="RioContext.hpp">
       <Filter>Network\RIO</Filter>
     </ClInclude>
-    <ClInclude Include="CircularBuffer.hpp">
-      <Filter>Network\Utils</Filter>
+    <ClInclude Include="RecvBuffer.hpp">
+      <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="RecvBuffer.hpp" />
   </ItemGroup>
 </Project>

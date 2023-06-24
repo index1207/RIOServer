@@ -21,10 +21,11 @@ public:
 		std::wcout << std::format(L"[INFO] Client Disconnected {}:{}\n", mIpAddress.GetAddress(), mIpAddress.GetPort());
 	}
 
-	virtual void OnRecv(byte* buffer, DWORD transffered) override
+	virtual int OnRecv(byte* buffer, DWORD transffered) override
 	{
-		std::wcout << L"[INFO] Received " << std::string((const char*)buffer).c_str() << '\n';
-		Send(buffer, transffered);
+		std::cout << "[INFO] Received " << std::string(reinterpret_cast<const char*>(buffer), transffered) << '\n';
+		//Send(buffer, transffered);
+		return transffered;
 	}
 	virtual void OnSend(DWORD transffered) override
 	{

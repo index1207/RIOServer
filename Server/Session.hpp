@@ -8,7 +8,7 @@
 
 class Session : public std::enable_shared_from_this<Session>
 {
-	enum { BUFFER_SIZE = 0x10000 };
+	enum { PAGE_SIZE = 0x1000 };
 public:
 	Session(int threadId);
 	virtual ~Session();
@@ -40,7 +40,7 @@ private:
 	int mThreadId;
 private:
 	RIO_RQ mReqQue;
-	RIO_BUFFERID mBufferId;
+	RIO_BUFFERID mRecvBufferId;
+	RIO_BUFFERID mSendBufferId;
 	RecvBuffer* recvBuffer;
-	byte* mBuffer;
 };

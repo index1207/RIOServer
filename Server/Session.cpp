@@ -3,6 +3,7 @@
 
 #include "Rio.hpp"
 #include "IOManager.hpp"
+#include "RioBuffer.hpp"
 
 #include <format>
 #include <queue>
@@ -11,16 +12,10 @@
 Session::Session(int threadId)
 	: mThreadId(threadId), mSock(INVALID_SOCKET), mReqQue(RIO_INVALID_RQ), mDisconnected(true)
 {
-	mBuffer = reinterpret_cast<byte*>(::VirtualAllocEx(GetCurrentProcess(), 0, BUFFER_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE));
-	if (mBuffer == nullptr)
-	{
-		throw std::runtime_error("Virtual memory allocation error.");
-	}
+	recvBuffer = new RecvBuffer(16);
 
-	recvBuffer = new RecvBuffer(mBuffer, BUFFER_SIZE);
-
-	mBufferId = RIO.RIORegisterBuffer(reinterpret_cast<PCHAR>(mBuffer), BUFFER_SIZE);
-	if (mBufferId == RIO_INVALID_BUFFERID)
+	mRecvBufferId = RioBuffer::RegisterBuffer(recvBuffer);
+	if (mRecvBufferId == RIO_INVALID_BUFFERID)
 	{
 		CRASH(net_exception);
 	}
@@ -29,8 +24,7 @@ Session::Session(int threadId)
 Session::~Session()
 {
 	delete recvBuffer;
-	RIO.RIODeregisterBuffer(mBufferId);
-	::VirtualFreeEx(GetCurrentProcess(), mBuffer, 0, MEM_RELEASE);
+	RioBuffer::DeregisterBuffer(mRecvBufferId);
 }
 
 void Session::Initialize(SOCKET sock, IPAddress ipAddress)
@@ -80,7 +74,7 @@ bool inline Session::isConnected()
 void Session::Send(byte* buffer, int length)
 {
 	SendContext* sendContext = new SendContext();
-	sendContext->BufferId = mBufferId;
+	sendContext->BufferId = mSendBufferId;
 	sendContext->owner = shared_from_this();
 
 	//memmove(mBuffer + mCircularBuffer.getWritableOffset(), buffer, length);
@@ -99,7 +93,7 @@ bool Session::PostRecv()
 	recvBuffer->Clear();
 	RecvContext* recvContext = new RecvContext();
 	recvContext->owner = shared_from_this();
-	recvContext->BufferId = mBufferId;
+	recvContext->BufferId = mRecvBufferId;
 	recvContext->Length = recvBuffer->GetFreeSize();
 	recvContext->Offset = recvBuffer->GetWriteOffset();
 
@@ -131,9 +125,9 @@ void Session::CompleteRecv(RecvContext* recvContext, DWORD transferred)
 	}
 
 	auto buf = std::make_shared<byte[]>(transferred);
-	std::copy(mBuffer + recvBuffer->GetReadOffset(), mBuffer + recvBuffer->GetDataSize(), buf.get());
+	std::copy(recvBuffer->GetBuffer() + recvBuffer->GetReadOffset(), recvBuffer->GetBuffer() + recvBuffer->GetDataSize(), buf.get());
 
-	int recvLen = OnRecv(mBuffer, transferred);
+	int recvLen = OnRecv(recvBuffer->GetBuffer(), transferred);
 	if (recvLen < 0 || recvLen > recvBuffer->GetDataSize())
 	{
 		Disconnect();

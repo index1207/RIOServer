@@ -23,7 +23,8 @@ public:
 
 	virtual int OnRecv(byte* buffer, DWORD transffered) override
 	{
-		std::cout << "[INFO] Received " << std::string(reinterpret_cast<const char*>(buffer), transffered) << '\n';
+		std::string recvStr(reinterpret_cast<const char*>(buffer), transffered);
+		std::wcout << L"[INFO] Received " << Encoding::ConvertTo<std::wstring>(recvStr) << '\n';
 		//Send(buffer, transffered);
 		return transffered;
 	}

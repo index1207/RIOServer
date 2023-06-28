@@ -34,10 +34,12 @@ int main(int argc, char* argv[])
 
 	std::cout << "connected!\n";
 
-	std::string data = "HELLO WORLD!";
+	std::string data = argv[2];
 	while (true)
 	{
-		send(s, data.c_str(), data.size(), 0);
+		int sendLen = send(s, data.c_str(), data.size(), 0);
+		if (sendLen <= 0) return 0;
+		Sleep(150);
 	}
 
 	::WSACleanup();

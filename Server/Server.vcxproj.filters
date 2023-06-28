@@ -60,6 +60,9 @@
     <ClCompile Include="RecvBuffer.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="RioBuffer.cpp">
+      <Filter>Network\RIO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SocketUtils.hpp">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="RecvBuffer.hpp">
       <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="RioBuffer.hpp">
+      <Filter>Network\RIO</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

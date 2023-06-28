@@ -1,9 +1,17 @@
 #pragma once
+//5#include "RioBuffer.hpp"
 
 class RecvBuffer
 {
+	friend class RioBuffer;
 public:
-	RecvBuffer(byte* buffer, size_t bufferSize);
+	RecvBuffer(size_t pageCount);
+	~RecvBuffer();
+
+	auto inline GetBuffer() -> byte* const
+	{
+		return _buffer;
+	}
 
 	auto inline GetDataSize() -> size_t
 	{
@@ -11,7 +19,7 @@ public:
 	}
 	auto inline GetFreeSize() -> size_t
 	{
-		return _size - _writeIdx;
+		return _pageCount * 0x1000 - _writeIdx;
 	}
 
 	auto inline GetReadOffset() -> size_t
@@ -45,7 +53,6 @@ public:
 		_readIdx += numOfBytes;
 		return true;
 	}
-
 	auto inline OnWrite(int numOfBytes) -> bool
 	{
 		if (numOfBytes > GetFreeSize())
@@ -55,7 +62,7 @@ public:
 	}
 private:
 	byte* _buffer;
-	size_t _size;
+	size_t _pageCount;
 	size_t _readIdx;
 	size_t _writeIdx;
 };
